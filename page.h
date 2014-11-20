@@ -18,9 +18,12 @@ struct RID{
 
 struct Record
 {
-  void* data;
+  void* data;//cstrings
   int length;
-};
+};//need to allocate storage and make data point to the data you want to insert, specify that length...2 chars of 20, length would be 40
+//2 chars of 20 + int = 4 bytes
+//take relation name, go to system catalog, find all attributes and add up their lengths
+//table = attrcat = has all attribute and relation names -> USE THAT TO GET LENGTHS
 
 // slot structure
 struct slot_t {
@@ -61,7 +64,7 @@ public:
     const short getFreeSpace() const; // returns amount of free space
 
     // inserts a new record (rec) into the page, returns RID of record 
-    const Status insertRecord(const Record & rec, RID& rid);
+    const Status insertRecord(const Record & rec, RID& rid);//USE THIS FOR INSERT
 
     // delete the record with the specified rid
     const Status deleteRecord(const RID & rid);

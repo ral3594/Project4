@@ -28,16 +28,16 @@ protected:
   File* file;             // pointer to underlying DB File object
   HeaderPage* headerPage;	// pointer to header page in buffer pool
   int headerPageNo;	      // page number of header page
-
+//heapfile for each table
 public:
-  HeapFile(const string& name, Status& returnStatus);
+  HeapFile(const string& name, Status& returnStatus);//like for example heapfile('students', status value) should be ok value or not ok value
   ~HeapFile();
 
   // Return number of records in file
   const int getRecCnt() const;
 
   // Insert record into file
-  const Status insertRecord(const Record& rec, RID& outRid); 
+  const Status insertRecord(const Record& rec, RID& outRid); //can insert once heapfile is opened, requires record, returns RID
 
   // Delete record from file
   const Status deleteRecord(const RID& rid);
@@ -79,7 +79,7 @@ public:
   Status gotoMarker(RID& rid, Record& rec); 
 
   // Retrieve record identified by RID
-  const Status getRecord(const RID& rid, Record& rec);
+  const Status getRecord(const RID& rid, Record& rec); //USE THIS FOR SELECT
 
   // Marks current page of scan dirty
   const Status markDirty(const RID& rid);

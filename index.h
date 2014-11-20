@@ -48,10 +48,10 @@ public:
   Index(const string& name,      // name of the relation being indexed
   	const int offset,            // offset of the attribute being indexed 
   	const int length,            // length of the attribute being indexed
-  	const Datatype type,         // type of the attribute being indexed
-  	const int unique,            // =1 if the index should only allow unique entries
-  	Status& status);             // return error codes
-
+  	const Datatype type,         // type of the attribute being indexed -- attr desc
+  	const int unique,            // =1 if the index should only allow unique entries - 0
+  	Status& status);             // return error codes declare this status
+//call this to open the index file
   ~Index();
 
   // Insert an entry into the index. value should point to the index key (attribute)
