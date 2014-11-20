@@ -17,7 +17,8 @@ public:
                       const string & fileName);     // the file containing the data for loading.
 
    // A utility to print a relation
-   static Status Print(string relation);
+   static Status Print(string relation);//prints relation - put this in your code to debug
+   
    
    // Quit the database and perform any necessary cleanup
    static void Quit(void);
