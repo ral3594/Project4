@@ -59,6 +59,19 @@ Status Updates::Insert(const string& relation,      // Name of the relation
         //insert on any index
         //loop through array of attrDesc check if there is an index and then open the file if there is and insert the record
         //check out index.h
+        for (int i = 0; i < num; i++){
+            if (arrayofattr[i].indexed == true){
+                Status indstatus;
+                Index ind(relation, arrayofattr[i].attrOffset, arrayofattr[i].attrLen, static_cast<Datatype>(arrayofattr[i].attrType), 0, indstatus);
+                if (indstatus == OK){
+                    for (int j = 0; j < num; j++){
+                        if (strcmp(arrayofattr[i].attrName, attrList[j].attrName) == 0){
+                            ind.insertEntry(attrList[j].attrValue, oRID);
+                        }
+                    }
+                }
+            }
+        }
         Utilities::Print(relation);
     }
     return OK;
