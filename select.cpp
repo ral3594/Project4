@@ -20,20 +20,26 @@ Status Operators::Select(const string & result,      // name of the output relat
 
 AttrDesc *arrayofattr;
 int num = 0;
-AttrDesc *predattr;
+//AttrDesc *predattr;
 attrCat->getRelInfo(attr->relName, num, arrayofattr);
+AttrDesc projnamesdesc[projCnt];
+AttrDesc attrpreddesc;
+int reclen = 0;
 for (int i = 0; i < num; i++){
+	if (strcmp(arrayofattr[i].attrName, projNames[i].attrName) == 0){
+		projnamesdesc[i] = arrayofattr[i];
+		reclen = reclen + arrayofattr[i].attrLen;
+	}
 	if (strcmp(arrayofattr[i].attrName, attr->attrName) == 0){
-		predattr = &arrayofattr[i];
+		attrpreddesc = arrayofattr[i];
 	}
 }
-if (predattr->indexed == true && op == EQ){
-	//do something
-}
-else{
-	//scan select
-
-	
+for (int i = 0; i < num; i++){
+	if (strcmp(arrayofattr[i].attrName, attr->attrName) == 0){
+		if (arrayofattr[i].indexed == true && op == EQ){
+			Operators::IndexSelect(result, projCnt, projnamesdesc, &attrpreddesc, op,attrValue, reclen);
+		}
+	}
 }
 return OK;
 }
