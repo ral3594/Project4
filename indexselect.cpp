@@ -3,6 +3,7 @@
 #include "index.h"
 #include "heapfile.h"
 #include <cstring>
+#include <cstdlib>
 Status Operators::IndexSelect(const string& result,       // Name of the output relation 
                               const int projCnt,          // Number of attributes in the projection
                               const AttrDesc projNames[], // Projection list (as AttrDesc) -- select a, b from c where ___ ..projecting a and b
@@ -39,7 +40,8 @@ Status Operators::IndexSelect(const string& result,       // Name of the output 
   Index attrind(attrDesc->relName, attrDesc->attrOffset, attrDesc->attrLen, static_cast<Datatype>(attrDesc->attrType), 0, Indstatus);
   if (Indstatus == OK){
     Status relationstatus;
-    HeapFileScan relationheap(attrDesc->relName, relationstatus);
+    HeapFileScan relationheap(attrDesc->relName, attrDesc->attrOffset, attrDesc->attrLen, static_cast<Datatype>(attrDesc->attrType),(char *)attrValue, op, relationstatus);
+
     if (attrind.startScan(attrValue) == OK){
       Status scanstat;
       RID rid;
@@ -47,12 +49,17 @@ Status Operators::IndexSelect(const string& result,       // Name of the output 
       while ((scanstat = attrind.scanNext(rid)) == OK){
         relationheap.getRandomRecord(rid, rec);
         Record newrec;
+        newrec.length = reclen;
+        newrec.data = malloc(reclen);
         for (int i = 0; i < projCnt; i++){
           memcpy((char *)newrec.data + projNames[i].attrOffset, (char *)rec.data + projNames[i].attrOffset, projNames[i].attrLen);
         }
         RID newrid;
         resultheap.insertRecord(newrec, newrid);
+        free(newrec.data);
       }
+      attrind.endScan();
+      
     }
   }
   

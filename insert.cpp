@@ -79,3 +79,4 @@ Status Updates::Insert(const string& relation,      // Name of the relation
 //char *x = malloc(reclen)
 //free(x);
 //check dynamic vs. status
+//where do i free?
