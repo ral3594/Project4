@@ -1,7 +1,8 @@
 #include "catalog.h"
 #include "query.h"
 #include "index.h"
-
+#include <cstring>
+#include <cstdlib>
 /* 
  * A simple scan select using a heap file scan
  */
@@ -16,7 +17,29 @@ Status Operators::ScanSelect(const string& result,       // Name of the output r
 {
   cout << "Algorithm: File Scan" << endl;
   
-  /* Your solution goes here */
-
+  Status resultstatus;
+  HeapFile resultheap(result, resultstatus);
+  Status relationstatus;
+  HeapFileScan relationheap(attrDesc->relName, attrDesc->attrOffset, attrDesc->attrLen, static_cast<Datatype>(attrDesc->attrType),(char *)attrValue, op, relationstatus);
+  if (relationstatus == OK && resultstatus == OK){
+      if (relationheap.startScan(attrDesc->attrOffset, attrDesc->attrLen, static_cast<Datatype>(attrDesc->attrType), (char *)attrValue, op)  == OK){
+      Status scanstat;
+      RID rid;
+      Record rec;
+      while ((scanstat = relationheap.scanNext(rid)) == OK){
+        relationheap.getRandomRecord(rid, rec);
+        Record newrec;
+        newrec.length = reclen;
+        newrec.data = malloc(reclen);
+        for (int i = 0; i < projCnt; i++){
+          memcpy((char *)newrec.data + projNames[i].attrOffset, (char *)rec.data + projNames[i].attrOffset, projNames[i].attrLen);
+        }
+        RID newrid;
+        resultheap.insertRecord(newrec, newrid);
+        free(newrec.data);
+      }
+      relationheap.endScan();
+    }
+  }
   return OK;
 }

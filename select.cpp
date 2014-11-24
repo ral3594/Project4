@@ -35,9 +35,17 @@ for (int i = 0; i < num; i++){
 	}
 }
 for (int i = 0; i < num; i++){
-	if (strcmp(arrayofattr[i].attrName, attr->attrName) == 0){
-		if (arrayofattr[i].indexed == true && op == EQ){
+	if ((strcmp(arrayofattr[i].attrName, attr->attrName) == 0) && (arrayofattr[i].indexed == true) &&(op == EQ)){
+		//if (arrayofattr[i].indexed == true && op == EQ){
 			Operators::IndexSelect(result, projCnt, projnamesdesc, &attrpreddesc, op,attrValue, reclen);
+		// }
+		// else{
+			// Operators::ScanSelect(result, projCnt, projnamesdesc, &attrpreddesc, op, attrValue, reclen);
+		// }
+	}
+	else{
+		if (strcmp(arrayofattr[i].attrName, attr->attrName) == 0){
+			Operators::ScanSelect(result, projCnt, projnamesdesc, &attrpreddesc, op, attrValue, reclen);
 		}
 	}
 }
