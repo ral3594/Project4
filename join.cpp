@@ -4,7 +4,7 @@
 #include "index.h"
 #include <cmath>
 #include <cstring>
-
+#include <cstdlib>
 #define MAX(a,b) ((a) > (b) ? (a) : (b))
 #define DOUBLEERROR 1e-07
 
@@ -23,8 +23,64 @@ Status Operators::Join(const string& result,           // Name of the output rel
     	               const Operator op,              // Predicate operator
     	               const attrInfo* attr2)          // Right attr in the join predicate
 {
-    /* Your solution goes here */
-
+    AttrDesc *arrayofattr1;
+    AttrDesc *arrayofattr2;
+    int num1 = 0;
+    int num2 = 0;
+    attrCat->getRelInfo(attr1->relName, num1, arrayofattr1);
+    attrCat->getRelInfo(attr2->relName, num2, arrayofattr2);
+    AttrDesc projattrdesc[projCnt];
+    AttrDesc attrdesc2;
+    AttrDesc attrdesc1;
+    int reclen = 0;
+    for (int i = 0; i < projCnt; i++){
+        if ((strcmp(arrayofattr1[i].attrName, projNames[i].attrName) == 0) && (strcmp(arrayofattr1[i].relName, projNames[i].relName) == 0)){
+            projattrdesc[i] = arrayofattr1[i];
+            reclen = reclen + arrayofattr1[i].attrLen;
+            if ((strcmp(attr1->attrName, arrayofattr1[i].attrName) == 0) && (strcmp(arrayofattr1[i].relName, attr1->relName) == 0)){
+                attrdesc1 = arrayofattr1[i];
+            }
+            if ((strcmp(attr2->attrName, arrayofattr1[i].attrName) == 0) && (strcmp(arrayofattr1[i].relName, attr2->relName) == 0)){
+                attrdesc2 = arrayofattr1[i];
+            }
+        }
+         if ((strcmp(arrayofattr2[i].attrName, projNames[i].attrName) == 0) && (strcmp(arrayofattr2[i].relName, projNames[i].relName) == 0)){
+             projattrdesc[i] = arrayofattr2[i];
+             reclen = reclen + arrayofattr2[i].attrLen;
+             if ((strcmp(attr1->attrName, arrayofattr2[i].attrName) == 0) && (strcmp(arrayofattr2[i].relName, attr1->relName) == 0)){
+                attrdesc1 = arrayofattr2[i];
+            }
+            if ((strcmp(attr2->attrName, arrayofattr2[i].attrName) == 0) && (strcmp(arrayofattr2[i].relName, attr2->relName) == 0)){
+                attrdesc2 = arrayofattr2[i];
+            }
+         }
+        if ((strcmp(attr1->attrName, arrayofattr2[i].attrName) == 0) && (strcmp(arrayofattr2[i].relName, attr1->relName) == 0)){
+            attrdesc1 = arrayofattr2[i];
+        }
+        if ((strcmp(attr2->attrName, arrayofattr2[i].attrName) == 0) && (strcmp(arrayofattr2[i].relName, attr2->relName) == 0)){
+            attrdesc2 = arrayofattr2[i];
+        }
+        if ((strcmp(attr1->attrName, arrayofattr1[i].attrName) == 0) && (strcmp(arrayofattr1[i].relName, attr1->relName) == 0)){
+            attrdesc1 = arrayofattr1[i];
+        }
+        if ((strcmp(attr2->attrName, arrayofattr1[i].attrName) == 0) && (strcmp(arrayofattr1[i].relName, attr2->relName) == 0)){
+            attrdesc2 = arrayofattr1[i];
+        }
+    }
+    bool atloneindex = 0;
+    for (int i = 0;i < num1 ; i++){
+        if ((strcmp(arrayofattr1[i].attrName, attr1->attrName) == 0) && (arrayofattr1[i].indexed == true) && (op == EQ)){
+            atloneindex = true;
+        }
+    }
+    for (int i = 0; i < num2; i++){
+        if ((strcmp(arrayofattr2[i].attrName, attr2->attrName) == 0) && (arrayofattr2[i].indexed == true) && (op == EQ)){
+            atloneindex = true;
+        }
+    }
+    if (atloneindex == true){
+        Operators::INL(result, projCnt, projattrdesc, attrdesc1, op, attrdesc2, reclen);
+    }
 	return OK;
 }
 
