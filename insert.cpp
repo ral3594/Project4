@@ -72,7 +72,7 @@ Status Updates::Insert(const string& relation,      // Name of the relation
                 }
             }
         }
-        Utilities::Print(relation);
+        //Utilities::Print(relation); //BECCA THIS ONE MIGHT NEED TO BE FIXED
     }
     return OK;
 }

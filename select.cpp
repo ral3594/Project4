@@ -1,7 +1,7 @@
 #include "catalog.h"
 #include "query.h"
 #include "index.h"
-
+#include "utility.h"
 /*
  * Selects records from the specified relation.
  *
@@ -18,37 +18,40 @@ Status Operators::Select(const string & result,      // name of the output relat
 		         const void *attrValue)     // literal value in the predicate
 {
 
-AttrDesc *arrayofattr;
-int num = 0;
-//AttrDesc *predattr;
-attrCat->getRelInfo(attr->relName, num, arrayofattr);
-AttrDesc projnamesdesc[projCnt];
-AttrDesc attrpreddesc;
-int reclen = 0;
-for (int i = 0; i < num; i++){
-	if (strcmp(arrayofattr[i].attrName, projNames[i].attrName) == 0){
-		projnamesdesc[i] = arrayofattr[i];
-		reclen = reclen + arrayofattr[i].attrLen;
-	}
-	if (strcmp(arrayofattr[i].attrName, attr->attrName) == 0){
-		attrpreddesc = arrayofattr[i];
-	}
+AttrDesc arrayofattr[projCnt];
+
+//int num = 0;
+for (int i = 0; i < projCnt; i++){
+	attrCat->getInfo(projNames[i].relName, projNames[i].attrName,arrayofattr[i]);
 }
-for (int i = 0; i < num; i++){
-	if ((strcmp(arrayofattr[i].attrName, attr->attrName) == 0) && (arrayofattr[i].indexed == true) &&(op == EQ)){
+
+AttrDesc attrpreddesc;
+if (attrValue){
+	attrCat->getInfo(attr->relName, attr->attrName, attrpreddesc);
+}
+//sums up reclen
+int reclen = 0;
+for (int i = 0; i < projCnt; i++){
+	reclen = reclen + arrayofattr[i].attrLen;
+}
+
+//for (int i = 0; i < projCnt; i++){
+	//if ((strcmp(arrayofattr[i].attrName, attr->attrName) == 0) && (arrayofattr[i].indexed == true) &&(op == EQ)){
 		//if (arrayofattr[i].indexed == true && op == EQ){
-			Operators::IndexSelect(result, projCnt, projnamesdesc, &attrpreddesc, op,attrValue, reclen);
+		if ((attrpreddesc.indexed == true) && (op == EQ)){
+			Operators::IndexSelect(result, projCnt, arrayofattr, &attrpreddesc, op,attrValue, reclen);
 		// }
 		// else{
-			// Operators::ScanSelect(result, projCnt, projnamesdesc, &attrpreddesc, op, attrValue, reclen);
+			// Operators::ScanSelect(result, projCnt, arrayofattr, &attrpreddesc, op, attrValue, reclen);
 		// }
 	}
 	else{
-		if (strcmp(arrayofattr[i].attrName, attr->attrName) == 0){
-			Operators::ScanSelect(result, projCnt, projnamesdesc, &attrpreddesc, op, attrValue, reclen);
-		}
+		//if (strcmp(arrayofattr[i].attrName, attr->attrName) == 0){
+			Operators::ScanSelect(result, projCnt, arrayofattr, &attrpreddesc, op, attrValue, reclen);
+		//}
 	}
-}
+//}
+//print table
 return OK;
 }
 

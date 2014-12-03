@@ -1,0 +1,44 @@
+//AttrDesc *predattr;
+/*if (!attrValue){
+  	//Utilities::Print(projNames[0].relName);
+  	//put everything in result
+  	return OK;
+}
+attrCat->getRelInfo(attr->relName, num, arrayofattr);
+AttrDesc projnamesdesc[projCnt];
+AttrDesc attrpreddesc;
+bool attrdescset = 0;
+int reclen = 0;
+for (int i = 0; i < num; i++){
+	for (int j = 0; j < projCnt; j++){
+		if (strcmp(arrayofattr[i].attrName, projNames[j].attrName) == 0){
+			projnamesdesc[i] = arrayofattr[i];
+			reclen = reclen + arrayofattr[i].attrLen;//breaking here...where did 4 come from?
+		}
+		if (attrdescset == 0){
+			if (strcmp(arrayofattr[i].attrName, attr->attrName) == 0){//why can't access memory here?
+				attrpreddesc = arrayofattr[i];
+				attrdescset = 1;
+			}
+		}
+	}
+}*/
+/*
+attrCat->getRelInfo(attr->relName, num, arrayofattr);
+AttrDesc projdesc[projCnt];
+//puts everything into attrdesc array
+for (int i = 0;i < num; i++){
+	for (int j = 0; j < projCnt; j++){
+		if (strcmp(arrayofattr[i].attrName, projNames[j].attrName) == 0){
+			projdesc[i] = arrayofattr[i];
+		}
+	}
+}
+//changes attr to attrdesc object
+AttrDesc attrpreddesc;
+for (int i = 0; i < num; i++){
+	if (strcmp(arrayofattr[i].attrName, attr->attrName) == 0){
+		attrpreddesc = arrayofattr[i];
+	}
+}
+*/

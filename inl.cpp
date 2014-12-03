@@ -35,9 +35,12 @@ Status Operators::INL(const string& result,           // Name of the output rela
         Status scanstat;
         RID ridattr1;
         Record recattr1;
-        while ((scanstat = attr1hfscan.scanNext(ridattr1,recattr1)) == OK){
-          char *attr1val = new char [attrDesc1.attrLen];
-          memcpy(attr1val, (char*)recattr1.data + attrDesc1.attrOffset, attrDesc1.attrLen);
+        while ((scanstat = attr1hfscan.scanNext(ridattr1)) == OK){
+          //char *attr1val = new char [attrDesc1.attrLen];
+          attr1hfscan.getRandomRecord(ridattr1, recattr1);
+          void* attr1val;
+          attr1val = malloc(attrDesc1.attrLen);
+          memcpy((char *)attr1val, (char*)recattr1.data + attrDesc1.attrOffset, attrDesc1.attrLen);
           Status indscanstat;
           indscanstat = attr2index.startScan(attr1val);
           RID ridattr2;

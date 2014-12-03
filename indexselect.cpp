@@ -51,8 +51,10 @@ Status Operators::IndexSelect(const string& result,       // Name of the output 
         Record newrec;
         newrec.length = reclen;
         newrec.data = malloc(reclen);
+        int offset = 0;
         for (int i = 0; i < projCnt; i++){
-          memcpy((char *)newrec.data + projNames[i].attrOffset, (char *)rec.data + projNames[i].attrOffset, projNames[i].attrLen);
+          memcpy((char *)newrec.data + offset, (char *)rec.data + projNames[i].attrOffset, projNames[i].attrLen);
+          offset = offset + projNames[i].attrLen;
         }
         RID newrid;
         resultheap.insertRecord(newrec, newrid);
