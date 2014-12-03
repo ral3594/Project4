@@ -25,6 +25,7 @@ Status Operators::Join(const string& result,           // Name of the output rel
 {
     AttrDesc *arrayofattr1;
     AttrDesc *arrayofattr2;
+    //AttrDesc arrayofattrdesc[projCnt];
     int num1 = 0;
     int num2 = 0;
     attrCat->getRelInfo(attr1->relName, num1, arrayofattr1);
@@ -33,7 +34,9 @@ Status Operators::Join(const string& result,           // Name of the output rel
     AttrDesc attrdesc2;
     AttrDesc attrdesc1;
     int reclen = 0;
-    for (int i = 0; i < projCnt; i++){
+    attrCat->getInfo(attr1->relName, attr1->attrName, attrdesc1);
+    attrCat->getInfo(attr2->relName, attr2->attrName, attrdesc2);
+    /*for (int i = 0; i < projCnt; i++){
         if ((strcmp(arrayofattr1[i].attrName, projNames[i].attrName) == 0) && (strcmp(arrayofattr1[i].relName, projNames[i].relName) == 0)){
             projattrdesc[i] = arrayofattr1[i];
             reclen = reclen + arrayofattr1[i].attrLen;
@@ -66,7 +69,14 @@ Status Operators::Join(const string& result,           // Name of the output rel
         if ((strcmp(attr2->attrName, arrayofattr1[i].attrName) == 0) && (strcmp(arrayofattr1[i].relName, attr2->relName) == 0)){
             attrdesc2 = arrayofattr1[i];
         }
+    }*/
+    for (int i = 0; i < projCnt; i++){
+	    attrCat->getInfo(projNames[i].relName, projNames[i].attrName,projattrdesc[i]);
     }
+    for (int i = 0; i < projCnt; i++){
+    	reclen = reclen + projattrdesc[i].attrLen;
+    }
+    
     bool atloneindex = 0;
     for (int i = 0;i < num1 ; i++){
         if ((strcmp(arrayofattr1[i].attrName, attr1->attrName) == 0) && (arrayofattr1[i].indexed == true) && (op == EQ)){

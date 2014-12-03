@@ -38,18 +38,18 @@ Status Operators::INL(const string& result,           // Name of the output rela
         while ((scanstat = attr1hfscan.scanNext(ridattr1)) == OK){
           //char *attr1val = new char [attrDesc1.attrLen];
           attr1hfscan.getRandomRecord(ridattr1, recattr1);
-          void* attr1val;
-          attr1val = malloc(attrDesc1.attrLen);
-          memcpy((char *)attr1val, (char*)recattr1.data + attrDesc1.attrOffset, attrDesc1.attrLen);
+          //void* attr1val;
+          //attr1val = malloc(attrDesc1.attrLen);
+          //memcpy((char *)attr1val, (char*)recattr1.data + attrDesc1.attrOffset, attrDesc1.attrLen);
           Status indscanstat;
-          indscanstat = attr2index.startScan(attr1val);
+          indscanstat = attr2index.startScan((char *)recattr1.data + attrDesc1.attrOffset);
           RID ridattr2;
           Record recattr2;
           while ((indscanstat = attr2index.scanNext(ridattr2)) ==  OK){
             attr2hfscan.getRandomRecord(ridattr2, recattr2);
             RID newrid;
             Record newrec;
-            newrec.data = malloc(reclen);
+            newrec.data = new char[reclen];
             newrec.length = reclen;
             int location = 0;
             for (int i = 0; i < projCnt; i++){
@@ -65,8 +65,10 @@ Status Operators::INL(const string& result,           // Name of the output rela
                 continue;
               }
             }
-            free(newrec.data);
+            resultheap.insertRecord(newrec, newrid);
+            delete[] ((char *)newrec.data);
           }
+          //free(attr1val);
         }
         attr2index.endScan();
       }
@@ -82,11 +84,11 @@ Status Operators::INL(const string& result,           // Name of the output rela
         while ((scanstat = attr2hfscan.scanNext(ridattr2,recattr2)) == OK){
           //char *attr2val = new char [attrDesc2.attrLen];
           //char attr2val[recattr2.length];
-          void *attr2val;
-          attr2val = malloc(attrDesc2.attrLen);
-          memcpy(attr2val, (char*)recattr2.data + attrDesc2.attrOffset, attrDesc2.attrLen);//issue is not getting 5 in attr2val...should be though
+          //void *attr2val;
+          //attr2val = malloc(attrDesc2.attrLen);
+          //memcpy(attr2val, (char*)recattr2.data + attrDesc2.attrOffset, attrDesc2.attrLen);//issue is not getting 5 in attr2val...should be though
           Status indscanstat;
-          indscanstat = attr1index.startScan(attr2val);//filtering for something incorrect so never finds that..currently getting /006..not an id
+          indscanstat = attr1index.startScan((char *)recattr2.data + attrDesc2.attrOffset);//filtering for something incorrect so never finds that..currently getting /006..not an id
           RID ridattr1;
           Record recattr1;
           while ((indscanstat = attr1index.scanNext(ridattr1)) ==  OK){//can't get this to work because attr2val is not right
@@ -109,8 +111,10 @@ Status Operators::INL(const string& result,           // Name of the output rela
                 continue;
               }
             }
-            free(newrec.data);
+             resultheap.insertRecord(newrec, newrid);
+             free(newrec.data);
           }
+          //free(attr2val);
         }
         attr1index.endScan();
       }
